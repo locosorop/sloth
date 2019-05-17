@@ -12,6 +12,9 @@ EventDelay d_short(80);
 EventDelay d_long(500);
 EventDelay d_longest(800);
 int event = 0;
+int whineTime = 5000;
+EventDelay d_whine(whineTime);
+int whine = true;
 
 void setup()
 {
@@ -23,10 +26,15 @@ void setup()
   {
     // Wait...
   }
+  d_whine.start();
 }
 
 void updateControl()
 {
+  if (d_whine.ready())
+  {
+    whine = false;
+  }
   if (event == 0)
   {
     digitalWrite(HEART_PIN, HIGH);
@@ -65,7 +73,10 @@ void updateControl()
 
 int updateAudio()
 {
-  return whineSound.next();
+  if (whine)
+  {
+    return whineSound.next();
+  }
 }
 
 void loop()
