@@ -7,14 +7,19 @@
 #define HEART_PIN 13
 
 SampleHuffman whineSound(WHINE_SOUNDDATA, WHINE_HUFFMAN, WHINE_SOUNDDATA_BITS);
-EventDelay d_shortest(50);
-EventDelay d_short(80);
-EventDelay d_long(500);
-EventDelay d_longest(800);
+int t_shortest = 50;
+int t_short = 80;
+int t_long = 500;
+int t_longest = 800;
+EventDelay d_shortest(t_shortest);
+EventDelay d_short(t_short);
+EventDelay d_long(t_long);
+EventDelay d_longest(t_longest);
+int heartbeatAdjustment = 0;
 int event = 0;
-int whineTime = 10000; // 10 seconds (approx)
+int whineTime = 5000; // 5 seconds (approx)
 EventDelay d_whine(whineTime);
-int downTime = 20000; // 20 seconds (approx)
+int downTime = 10000; // 10 seconds (approx)
 EventDelay d_down(downTime);
 int whine = true;
 
@@ -34,52 +39,61 @@ void setup()
 
 void updateControl()
 {
+  // Silence reactivation
   if (whine && d_whine.ready())
   {
+    Serial.println();
     whine = false;
     int randomDownTime = (int)random(10000, 60000);
     Serial.println("d_down start " + (String)randomDownTime);
     d_down.start(randomDownTime);
+    heartbeatAdjustment = (int)random(0, 10);
+    Serial.println("heartbeatAdjustment " + (String)heartbeatAdjustment);
   }
+  // Whine sound reactivation
   if (!whine && d_down.ready())
   {
+    Serial.println();
     whine = true;
-    int randomWhineTime = (int)random(5000, 30000);
+    int randomWhineTime = (int)random(5000, 10000);
     Serial.println("d_whine start " + (String)randomWhineTime);
     d_whine.start(randomWhineTime);
+    whineSound.start();
+    heartbeatAdjustment = (int)random(-50, 0);
+    Serial.println("heartbeatAdjustment " + (String)heartbeatAdjustment);
   }
   if (event == 0)
   {
     digitalWrite(HEART_PIN, HIGH);
-    d_short.start();
-    Serial.println("0");
+    d_short.start(t_short + heartbeatAdjustment);
+    Serial.print("0");
     event = 1;
   }
   if (event == 1 && d_short.ready())
   {
     digitalWrite(HEART_PIN, LOW);
-    d_long.start();
-    Serial.println("1");
+    d_long.start(t_long + heartbeatAdjustment);
+    Serial.print("1");
     event = 2;
   }
   if (event == 2 && d_long.ready())
   {
     digitalWrite(HEART_PIN, HIGH);
-    d_shortest.start();
-    Serial.println("2");
+    d_shortest.start(t_short + heartbeatAdjustment);
+    Serial.print("2");
     event = 3;
   }
   if (event == 3 && d_shortest.ready())
   {
     digitalWrite(HEART_PIN, LOW);
-    d_longest.start();
-    Serial.println("3");
+    d_longest.start(t_longest + heartbeatAdjustment);
+    Serial.print("3");
     event = 4;
   }
   if (event == 4 && d_longest.ready())
   {
-    d_short.start();
-    Serial.println("4");
+    d_short.start(t_short + heartbeatAdjustment);
+    Serial.print("4");
     event = 0;
   }
 }
