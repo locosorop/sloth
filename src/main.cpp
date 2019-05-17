@@ -12,8 +12,10 @@ EventDelay d_short(80);
 EventDelay d_long(500);
 EventDelay d_longest(800);
 int event = 0;
-int whineTime = 5000;
+int whineTime = 10000; // 10 seconds (approx)
 EventDelay d_whine(whineTime);
+int downTime = 20000; // 20 seconds (approx)
+EventDelay d_down(downTime);
 int whine = true;
 
 void setup()
@@ -21,6 +23,7 @@ void setup()
   pinMode(HEART_PIN, OUTPUT);
   whineSound.setLoopingOn();
   startMozzi();
+  randomSeed(analogRead(0));
   Serial.begin(9600);
   while (!Serial)
   {
@@ -31,9 +34,19 @@ void setup()
 
 void updateControl()
 {
-  if (d_whine.ready())
+  if (whine && d_whine.ready())
   {
     whine = false;
+    int randomDownTime = (int)random(10000, 60000);
+    Serial.println("d_down start " + (String)randomDownTime);
+    d_down.start(randomDownTime);
+  }
+  if (!whine && d_down.ready())
+  {
+    whine = true;
+    int randomWhineTime = (int)random(5000, 30000);
+    Serial.println("d_whine start " + (String)randomWhineTime);
+    d_whine.start(randomWhineTime);
   }
   if (event == 0)
   {
