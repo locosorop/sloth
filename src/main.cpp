@@ -1,10 +1,11 @@
 #include <Arduino.h>
+#include <STM32ADC.h>
 #include <MozziGuts.h>
 #include <SampleHuffman.h>
 #include <EventDelay.h>
 #include "./audio/whine_sounddata.h"
 
-#define HEART_PIN 13
+#define HEART_PIN PB13
 
 SampleHuffman whineSound(WHINE_SOUNDDATA, WHINE_HUFFMAN, WHINE_SOUNDDATA_BITS);
 int t_shortest = 50;
@@ -163,7 +164,9 @@ int updateAudio()
   if (whine)
   {
     return whineSound.next();
-  }
+  } 
+    
+  return 0;
 }
 
 void loop()
