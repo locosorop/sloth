@@ -33,16 +33,16 @@ bool asleep = false;
 
 void setup()
 {
-  while (!Serial)
-  {
-    ;
-  }
-  Serial.println("LoCoSoRoP");
+  // while (!Serial)
+  // {
+  //   ;
+  // }
+  // Serial.println("LoCoSoRoP");
   pinMode(HEART_PIN, OUTPUT);
   whineSound.setLoopingOn();
   startMozzi();
   randomSeed(analogRead(0));
-  Serial.begin(9600);
+  // Serial.begin(9600);
   d_whine.start();
   d_awake.start();
 }
@@ -52,78 +52,78 @@ void updateControl()
   // Sleep check
   if (!asleep && d_awake.ready())
   {
-    Serial.println();
+    // Serial.println();
     if (sleepChecks < 0)
     {
-      Serial.println("[going to sleep]");
+      // Serial.println("[going to sleep]");
       sleepChecks = 10;
       asleep = true;
       heartbeatAdjustment = 80;
-      Serial.println("d_sleep start " + (String)sleepTime);
-      Serial.println("heartbeatAdjustment " + (String)heartbeatAdjustment);
+      // Serial.println("d_sleep start " + (String)sleepTime);
+      // Serial.println("heartbeatAdjustment " + (String)heartbeatAdjustment);
       d_sleep.start();
     }
     else
     {
-      Serial.println("[skip sleeping]");
+      // Serial.println("[skip sleeping]");
       sleepChecks--;
-      Serial.println("sleepChecks " + (String)sleepChecks);
+      // Serial.println("sleepChecks " + (String)sleepChecks);
       d_awake.start();
     }
   }
   // Wakeup check
   if (asleep && d_sleep.ready())
   {
-    Serial.println();
+    // Serial.println();
     if (awakeChecks < 0)
     {
-      Serial.println("[waking up]");
+      // Serial.println("[waking up]");
       awakeChecks = 10;
       asleep = false;
       heartbeatAdjustment = 0;
-      Serial.println("d_awake start " + (String)awakeTime);
-      Serial.println("heartbeatAdjustment " + (String)heartbeatAdjustment);
+      // Serial.println("d_awake start " + (String)awakeTime);
+      // Serial.println("heartbeatAdjustment " + (String)heartbeatAdjustment);
       d_awake.start();
     }
     else
     {
-      Serial.println("[skip waking up]");
+      // Serial.println("[skip waking up]");
       awakeChecks--;
-      Serial.println("awakeChecks " + (String)awakeChecks);
+      // Serial.println("awakeChecks " + (String)awakeChecks);
       d_sleep.start();
     }
   }
   // Silence reactivation
   if (!asleep && whine && d_whine.ready())
   {
-    Serial.println();
-    Serial.println("[stop whining]");
+    // Serial.println();
+    // Serial.println("[stop whining]");
     whine = false;
     int randomDownTime = (int)random(10000, 60000);
-    Serial.println("d_down start " + (String)randomDownTime);
+    // Serial.println("d_down start " + (String)randomDownTime);
     d_down.start(randomDownTime);
     heartbeatAdjustment = (int)random(0, 10);
-    Serial.println("heartbeatAdjustment " + (String)heartbeatAdjustment);
+    // Serial.println("heartbeatAdjustment " + (String)heartbeatAdjustment);
   }
   // Whine sound reactivation
   if (!asleep && !whine && d_down.ready())
   {
-    Serial.println();
-    Serial.println("[start whining]");
+    // Serial.println();
+    // Serial.println("[start whining]");
     whine = true;
     int randomWhineTime = (int)random(5000, 10000);
-    Serial.println("d_whine start " + (String)randomWhineTime);
+    // Serial.println("d_whine start " + (String)randomWhineTime);
     d_whine.start(randomWhineTime);
     whineSound.start();
     heartbeatAdjustment = (int)random(-50, 0);
-    Serial.println("heartbeatAdjustment " + (String)heartbeatAdjustment);
+    // Serial.println("heartbeatAdjustment " + (String)heartbeatAdjustment);
   }
   if (event == 0)
   {
     digitalWrite(HEART_PIN, HIGH);
     d_short.start(t_short + heartbeatAdjustment);
     // Serial.print("0");
-    Serial.print("-");
+    // Serial.print("-");
     event = 1;
   }
   if (event == 1 && d_short.ready())
@@ -131,7 +131,7 @@ void updateControl()
     digitalWrite(HEART_PIN, LOW);
     d_long.start(t_long + heartbeatAdjustment);
     // Serial.print("1");
-    Serial.print("_");
+    // Serial.print("_");
     event = 2;
   }
   if (event == 2 && d_long.ready())
@@ -139,7 +139,7 @@ void updateControl()
     digitalWrite(HEART_PIN, HIGH);
     d_shortest.start(t_short + heartbeatAdjustment);
     // Serial.print("2");
-    Serial.print("-");
+    // Serial.print("-");
     event = 3;
   }
   if (event == 3 && d_shortest.ready())
@@ -147,14 +147,14 @@ void updateControl()
     digitalWrite(HEART_PIN, LOW);
     d_longest.start(t_longest + heartbeatAdjustment);
     // Serial.print("3");
-    Serial.print("_");
+    // Serial.print("_");
     event = 4;
   }
   if (event == 4 && d_longest.ready())
   {
     d_short.start(t_short + heartbeatAdjustment);
     // Serial.print("4");
-    Serial.print("*");
+    // Serial.print("*");
     event = 0;
   }
 }
