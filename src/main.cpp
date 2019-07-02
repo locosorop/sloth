@@ -32,16 +32,16 @@ bool asleep = false;
 
 void setup()
 {
+  Serial.begin(9600);
   while (!Serial)
   {
     ;
   }
-  Serial.println("LoCoSoRoP");
+  Serial.println("LoCoSoRoP - All rights reserved.");
   pinMode(HEART_PIN, OUTPUT);
   whineSound.setLoopingOn();
   startMozzi();
   randomSeed(analogRead(0));
-  Serial.begin(9600);
   d_whine.start();
   d_awake.start();
 }
